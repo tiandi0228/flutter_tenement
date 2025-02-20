@@ -10,10 +10,11 @@ class MyRouter {
 
   static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = Handler(
-        handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-      developer.log("ROUTE WAS NOT FOUND !!!" as num);
-      return;
-    });
+      handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+        developer.log("ROUTE WAS NOT FOUND !!!" as num);
+        return;
+      },
+    );
 
     // 首页
     router.define(
@@ -40,6 +41,20 @@ class MyRouter {
     router.define(
       '/message',
       handler: messageScreenHandler,
+      transitionType: TransitionType.inFromRight,
+    );
+
+    // 缴费记录
+    router.define(
+      '/payment-records',
+      handler: recordsScreenHandler,
+      transitionType: TransitionType.inFromRight,
+    );
+
+    // 缴费详情
+    router.define(
+      '/payment-record-detail/:id',
+      handler: recordDetailScreenHandler,
       transitionType: TransitionType.inFromRight,
     );
   }

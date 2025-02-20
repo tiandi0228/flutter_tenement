@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const backgroundColor = Color(0xFFF2F3F5); // 全局背景色
-const cardColor = Color(0xFF333334); // 卡片背景色
+const cardColor = Color(0xFFFFFFFF); // 卡片背景色
 const buttonColor = Color(0xFF2E2E2E); // 按钮背景色
 const buttonHoverColor = Color(0xFF383838); // 按钮hover背景色
 const textColor = Color(0xFFFFFFFF); // 文本颜色

@@ -15,13 +15,22 @@ class _BodyState extends State<Body> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          HCCell(label: "姓名", value: "张三"),
-          HCCell(
-            label: "手机号码",
-            value: "13867820265",
-            onPressed: () {
-              print("点击了手机号码");
-            },
+          Container(
+            margin: EdgeInsets.only(top: 5, bottom: 5),
+            color: Colors.white,
+            child: Column(
+              children: [
+                HCCell(label: "姓名", value: "张三"),
+                HCCell(
+                  label: "手机号码",
+                  value: "13867820265",
+                  isBorder: false,
+                  onPressed: () {
+                    print("点击了手机号码");
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),

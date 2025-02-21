@@ -2,6 +2,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tenement/screens/home/home_screen.dart';
 import 'package:flutter_tenement/screens/house/house_screen.dart';
+import 'package:flutter_tenement/screens/login/login_screen.dart';
 import 'package:flutter_tenement/screens/message/message_screen.dart';
 import 'package:flutter_tenement/screens/record_detail/record_detail_screen.dart';
 import 'package:flutter_tenement/screens/records/records_screen.dart';
@@ -46,5 +47,12 @@ var recordsScreenHandler = Handler(
 var recordDetailScreenHandler = Handler(
   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
     return const RecordDetailScreen();
+  },
+);
+
+// 登录
+var loginScreenHandler = Handler(
+  handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+    return const LoginScreen();
   },
 );

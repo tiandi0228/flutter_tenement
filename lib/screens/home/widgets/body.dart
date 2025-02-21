@@ -30,7 +30,7 @@ class _BodyState extends State<Body> {
     ),
     Menu(
       title: '常用电话',
-      path: '/',
+      path: '/login',
       icon: Icons.phone_in_talk_outlined,
       iconColor: Colors.green,
     ),

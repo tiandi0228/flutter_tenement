@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tenement/widgets/cell.dart';
+import 'package:flutter_tenement/widgets/cell_widget.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -23,7 +23,7 @@ class _BodyState extends State<Body> {
                 HCCell(label: "姓名", value: "张三"),
                 HCCell(
                   label: "手机号码",
-                  value: "13867820265",
+                  value: "13333333333",
                   isBorder: false,
                   onPressed: () {
                     print("点击了手机号码");

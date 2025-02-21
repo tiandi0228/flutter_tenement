@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tenement/widgets/card.dart';
+import 'package:flutter_tenement/widgets/card_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Body extends StatefulWidget {

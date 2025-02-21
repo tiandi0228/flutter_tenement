@@ -57,5 +57,12 @@ class MyRouter {
       handler: recordDetailScreenHandler,
       transitionType: TransitionType.inFromRight,
     );
+
+    // 登录
+    router.define(
+      '/login',
+      handler: loginScreenHandler,
+      transitionType: TransitionType.inFromRight,
+    );
   }
 }

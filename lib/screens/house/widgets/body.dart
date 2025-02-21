@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tenement/widgets/cell.dart';
+import 'package:flutter_tenement/widgets/cell_widget.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});

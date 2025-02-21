@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class HCButton extends StatefulWidget {
-  final Function? onPressed;
+  final Function onPressed;
   final String text;
   final Color? backgroundColor;
   final Color? textColor;
 
   const HCButton({
     super.key,
-    this.onPressed,
+    required this.onPressed,
     required this.text,
     this.backgroundColor = const Color(0xFF0171F7),
     this.textColor = const Color(0xFFFFFFFF),
@@ -28,7 +28,7 @@ class _HCButtonState extends State<HCButton> {
       height: 50,
       padding: EdgeInsets.zero,
       child: TextButton(
-        onPressed: () => widget.onPressed?.call(),
+        onPressed: () => widget.onPressed.call(),
         style: ButtonStyle(
           minimumSize: WidgetStateProperty.all(const Size(100, 40)),
           padding: WidgetStateProperty.all(EdgeInsets.zero),

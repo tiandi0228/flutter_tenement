@@ -7,5 +7,6 @@ const buttonHoverColor = Color(0xFF383838); // 按钮hover背景色
 const textColor = Color(0xFFFFFFFF); // 文本颜色
 const secondaryTextColor = Color(0xFFC2C2C2); // 次级文本颜色
 const borderColor = Color(0xFF363B42); // 边框颜色
-const baseUrl = "https://api.syc.im/api/v1/tenement/";
+// const baseUrl = "https://api.syc.im/api/v1/tenement/";
+const baseUrl = "http://192.168.1.5:9797/api/v1/tenement/app/";
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

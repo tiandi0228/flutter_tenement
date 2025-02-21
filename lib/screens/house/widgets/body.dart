@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tenement/models/user_model.dart';
+import 'package:flutter_tenement/network/api.dart';
 import 'package:flutter_tenement/widgets/cell_widget.dart';
+import 'package:ftoast/ftoast.dart';
+import 'package:common_utils/common_utils.dart';
+import 'package:hive/hive.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -9,6 +14,57 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  String roomNumber = '';
+  String inTime = '';
+  String paidFormat = '';
+  String rentDeposit = '';
+  String utilityDeposits = '';
+  String nextRentPayTime = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserRoom();
+  }
+
+  // 获取租房信息
+  Future<void> _getUserRoom() async {
+    var box = Hive.box('Box');
+    var phoneCache = box.get('phone');
+
+    UserResponse res = await GetUserByRoomAPI.getCreateData(phone: phoneCache);
+    debugPrint(res.data?.inTime);
+    if (res.code != 100001) {
+      FToast.toast(
+        context,
+        duration: 800,
+        msg: res.message,
+        msgStyle: const TextStyle(color: Colors.white),
+      );
+      return;
+    }
+
+    setState(() {
+      roomNumber = res.data!.roomNumber.toString();
+      inTime = res.data!.inTime!;
+      paidFormat =
+          res.data!.paidFormat! == 1
+              ? "月付"
+              : res.data!.paidFormat! == 2
+              ? "季付"
+              : res.data!.paidFormat! == 3
+              ? "半年"
+              : "年付";
+      rentDeposit = MoneyUtil.changeFStr2YWithUnit(
+        res.data!.rentDeposit.toString(),
+      );
+      utilityDeposits = MoneyUtil.changeFStr2YWithUnit(
+        res.data!.utilityDeposits.toString(),
+      );
+      nextRentPayTime = res.data!.nextRentPayTime!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,11 +76,16 @@ class _BodyState extends State<Body> {
             color: Colors.white,
             child: Column(
               children: [
-                HCCell(label: "房间号", value: "2"),
-                HCCell(label: "入住时间", value: "2024-03-29"),
-                HCCell(label: "房租押金", value: "700"),
-                HCCell(label: "水电押金", value: "300"),
-                HCCell(label: "付费方式", value: "半年", isBorder: false),
+                HCCell(label: "房间号", value: roomNumber),
+                HCCell(label: "入住时间", value: inTime),
+                HCCell(label: "房租押金", value: "￥$rentDeposit"),
+                HCCell(label: "水电押金", value: "￥$utilityDeposits"),
+                HCCell(label: "付费方式", value: paidFormat),
+                HCCell(
+                  label: "下次房租缴费时间",
+                  value: nextRentPayTime,
+                  isBorder: false,
+                ),
               ],
             ),
           ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tenement/model/menu.dart';
+import 'package:flutter_tenement/models/menu_model.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});

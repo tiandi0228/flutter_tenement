@@ -6,7 +6,6 @@ import 'package:flutter_tenement/router/router_handler.dart';
 
 class MyRouter {
   static FluroRouter router = FluroRouter();
-  static String homeScreen = '/home';
 
   static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = Handler(
@@ -18,7 +17,7 @@ class MyRouter {
 
     // 首页
     router.define(
-      homeScreen,
+      '/home',
       handler: homeScreenHandler,
       transitionType: TransitionType.inFromLeft,
     );

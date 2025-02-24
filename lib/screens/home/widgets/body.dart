@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tenement/models/menu_model.dart';
-import 'package:flutter_tenement/utils/notification_util.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_tenement/models/upgrade_model.dart';
+import 'package:flutter_tenement/network/api.dart';
+import 'package:flutter_tenement/widgets/small_window_widget.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -11,7 +12,6 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> with WidgetsBindingObserver {
-
   List<Menu> menus = [
     Menu(
       title: '租房信息',
@@ -42,6 +42,11 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        _upgrade();
+      }
+    });
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -49,6 +54,19 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+  }
+
+  // 版本升级
+  Future<void> _upgrade() async {
+    try {
+      UpgradeResponse res = await UpgradeAPI.getCreateData(version: '1.0.1');
+      debugPrint("数据： ${res.data}");
+      if (res.code == 100001 && res.data?.content != "") {
+        SmallWindow().show(context, res.data as UpgradeModel);
+      }
+    } catch (e) {
+      debugPrint("获取升级错误: $e");
+    }
   }
 
   @override
@@ -88,19 +106,20 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
                 .map(
                   (item) => InkWell(
                     onTap: () async {
-                      // if (item.path == '/') {
-                      //   var status = await Permission.notification.status;
-                      //   if (status.isGranted) {
-                      //     debugPrint("isGranted true");
-                      //     NotificationService().ShowNotifiaction(
-                      //       title: '水电费缴费通知',
-                      //       body: '你好，今天是水电费缴费时间，请拍照片发房东',
-                      //     );
-                      //     return;
-                      //   } else {
-                      //     debugPrint("isGranted false");
-                      //   }
-                      // }
+                      if (item.path == '/login') {
+                        //   var status = await Permission.notification.status;
+                        //   if (status.isGranted) {
+                        //     debugPrint("isGranted true");
+                        //     NotificationService().ShowNotifiaction(
+                        //       title: '水电费缴费通知',
+                        //       body: '你好，今天是水电费缴费时间，请拍照片发房东',
+                        //     );
+                        //     return;
+                        //   } else {
+                        //     debugPrint("isGranted false");
+                        //   }
+                        return;
+                      }
                       Navigator.pushNamed(context, item.path);
                     },
                     child: Column(

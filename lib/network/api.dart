@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_tenement/models/captcha_model.dart';
 import 'package:flutter_tenement/models/login_model.dart';
 import 'package:flutter_tenement/models/order_detail_model.dart';
 import 'package:flutter_tenement/models/order_model.dart';
+import 'package:flutter_tenement/models/upgrade_model.dart';
 import 'package:flutter_tenement/models/user_model.dart';
 import 'package:flutter_tenement/network/network_manager.dart';
 
@@ -59,5 +59,16 @@ class GetOrderYearAPI {
   static Future<dynamic> getCreateData({required String year}) async {
     var res = await NetworkManager().get('order/year', params: {"year": year});
     return OrderDetailResponse.fromJson(res);
+  }
+}
+
+// 版本升级
+class UpgradeAPI {
+  static Future<dynamic> getCreateData({required String version}) async {
+    var res = await NetworkManager().post(
+      'upgrade',
+      params: {"version": version},
+    );
+    return UpgradeResponse.fromJson(res);
   }
 }

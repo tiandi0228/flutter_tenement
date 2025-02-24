@@ -5,6 +5,7 @@ class HCButton extends StatefulWidget {
   final String text;
   final Color? backgroundColor;
   final Color? textColor;
+  final double? width;
 
   const HCButton({
     super.key,
@@ -12,6 +13,7 @@ class HCButton extends StatefulWidget {
     required this.text,
     this.backgroundColor = const Color(0xFF0171F7),
     this.textColor = const Color(0xFFFFFFFF),
+    this.width,
   });
 
   @override
@@ -24,7 +26,7 @@ class _HCButtonState extends State<HCButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: widget.width ?? MediaQuery.of(context).size.width,
       height: 50,
       padding: EdgeInsets.zero,
       child: TextButton(
@@ -35,9 +37,7 @@ class _HCButtonState extends State<HCButton> {
           backgroundColor: WidgetStateProperty.all(widget.backgroundColor),
           overlayColor: WidgetStateProperty.all(Colors.transparent),
           shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           ),
         ),
         child: Text(

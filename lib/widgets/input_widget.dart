@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class HCInput extends StatefulWidget {
   final TextEditingController? controller;
+  final Function? onChanged;
   final String? hintText;
   final bool? obscureText;
   final IconData? icon;
@@ -9,6 +10,7 @@ class HCInput extends StatefulWidget {
   const HCInput({
     super.key,
     this.controller,
+    this.onChanged,
     this.hintText = '',
     this.obscureText,
     this.icon,
@@ -40,11 +42,7 @@ class _HCInputState extends State<HCInput> {
       child: TextFormField(
         controller: widget.controller,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.only(
-            left: 14.0,
-            bottom: 8.0,
-            top: 8.0,
-          ),
+          contentPadding:  EdgeInsets.zero,
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(

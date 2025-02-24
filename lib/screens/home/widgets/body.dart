@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tenement/models/menu_model.dart';
+import 'package:flutter_tenement/utils/notification_util.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -8,7 +10,8 @@ class Body extends StatefulWidget {
   State<Body> createState() => _BodyState();
 }
 
-class _BodyState extends State<Body> {
+class _BodyState extends State<Body> with WidgetsBindingObserver {
+
   List<Menu> menus = [
     Menu(
       title: '租房信息',
@@ -37,31 +40,75 @@ class _BodyState extends State<Body> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+
+    if (AppLifecycleState.resumed == state) {
+      debugPrint("进入app");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 20, bottom: 20),
+      padding: const EdgeInsets.only(top: 15),
+      margin: EdgeInsets.only(left: 10, right: 10, top: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 3, //阴影范围
+            spreadRadius: 0.1, //阴影浓度
+            color: const Color.fromARGB(20, 0, 0, 0), //阴影颜色
+          ),
+        ],
+      ),
       child: GridView.count(
         padding: EdgeInsets.zero,
-        crossAxisSpacing: 10,
+        crossAxisSpacing: 0,
         crossAxisCount: 4,
-        mainAxisSpacing: 10,
+        mainAxisSpacing: 0,
+        childAspectRatio: (MediaQuery.of(context).size.width / 4) / 80,
         shrinkWrap: true,
         children:
             menus
                 .map(
                   (item) => InkWell(
-                    onTap: () {
+                    onTap: () async {
+                      // if (item.path == '/') {
+                      //   var status = await Permission.notification.status;
+                      //   if (status.isGranted) {
+                      //     debugPrint("isGranted true");
+                      //     NotificationService().ShowNotifiaction(
+                      //       title: '水电费缴费通知',
+                      //       body: '你好，今天是水电费缴费时间，请拍照片发房东',
+                      //     );
+                      //     return;
+                      //   } else {
+                      //     debugPrint("isGranted false");
+                      //   }
+                      // }
                       Navigator.pushNamed(context, item.path);
                     },
-                    child: Container(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          Icon(item.icon, color: item.iconColor, size: 30),
-                          Padding(padding: EdgeInsets.only(bottom: 10)),
-                          Text(item.title),
-                        ],
-                      ),
+                    child: Column(
+                      children: [
+                        Icon(item.icon, color: item.iconColor, size: 30),
+                        Padding(padding: EdgeInsets.only(bottom: 10)),
+                        Text(item.title),
+                      ],
                     ),
                   ),
                 )

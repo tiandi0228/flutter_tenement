@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tenement/screens/record_detail/widgets/body.dart';
 
 class RecordDetailScreen extends StatelessWidget {
-  const RecordDetailScreen({super.key});
+  final String year;
+
+  const RecordDetailScreen({super.key, required this.year});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class RecordDetailScreen extends StatelessWidget {
           maxLines: 1,
         ),
       ),
-      body: Body(),
+      body: Body(year: year),
     );
   }
 }

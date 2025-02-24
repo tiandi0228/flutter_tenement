@@ -46,7 +46,8 @@ var recordsScreenHandler = Handler(
 // 缴费详情
 var recordDetailScreenHandler = Handler(
   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-    return const RecordDetailScreen();
+    String? year = params["year"]?.first;
+    return RecordDetailScreen(year: year ?? "");
   },
 );
 

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tenement/config/constants.dart';
@@ -10,6 +8,8 @@ class NetworkManager {
 
   factory NetworkManager() => _instance;
   late Dio dio;
+
+  var box = Hive.box('Box');
 
   NetworkManager._internal() {
     // BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
@@ -66,9 +66,7 @@ class NetworkManager {
   Future get(String path, {dynamic params, Options? options}) async {
     try {
       Options requestOptions = options ?? Options();
-      var box = Hive.box('Box');
       var token = box.get('access-token');
-      debugPrint('token: $token');
 
       /// 以下三行代码为获取token然后将其合并到header的操作
       Map<String, dynamic> authorization = {"Access-token": token};
@@ -84,7 +82,12 @@ class NetworkManager {
       // 当错误代码为 401 主动跳转登录界面
       if (e.response?.statusCode == 401) {
         Future.delayed(const Duration(seconds: 1), () {
-          navigatorKey.currentState?.pushNamed('/login');
+          box.clear();
+          Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.context,
+            '/login',
+            (route) => false,
+          );
         });
       }
       throw createErrorEntity(e);
@@ -95,7 +98,7 @@ class NetworkManager {
   Future post(String path, {dynamic params, Options? options}) async {
     try {
       Options requestOptions = options ?? Options();
-      var box = Hive.box('Box');
+
       var token = box.get('access-token');
 
       /// 以下三行代码为获取token然后将其合并到header的操作
@@ -111,7 +114,14 @@ class NetworkManager {
     } on DioException catch (e) {
       // 当错误代码为 401 主动跳转登录界面
       if (e.response?.statusCode == 401) {
-        navigatorKey.currentState?.pushNamed('/login');
+        Future.delayed(const Duration(seconds: 1), () {
+          box.clear();
+          Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.context,
+            '/login',
+            (route) => false,
+          );
+        });
       }
       throw createErrorEntity(e);
     }

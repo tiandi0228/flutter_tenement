@@ -52,7 +52,7 @@ class MyRouter {
 
     // 缴费详情
     router.define(
-      '/payment-record-detail/:id',
+      '/payment-record-detail/:year',
       handler: recordDetailScreenHandler,
       transitionType: TransitionType.inFromRight,
     );

@@ -19,6 +19,29 @@ class _BodyState extends State<Body> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
 
+  late String phoneValue = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // 监听手机号码输入，解决在手机上另一层组件获取不到数据
+    _phoneController.addListener(_handlePhoneFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  void _handlePhoneFocusChange() {
+    debugPrint("手机号码：${_phoneController.text}");
+    setState(() {
+      phoneValue = _phoneController.text;
+    });
+  }
+
   // 登录
   Future<void> _onLogin(BuildContext context) async {
     String phone = _phoneController.value.text;
@@ -43,32 +66,40 @@ class _BodyState extends State<Body> {
       );
       return;
     }
-
-    LoginResponse res = await LoginAPI.getCreateData(
-      phone: phone,
-      captcha: int.parse(code),
-    );
-
-    if (res.code != 100001) {
-      FToast.toast(
-        context,
-        duration: 800,
-        msg: res.message,
-        msgStyle: const TextStyle(color: Colors.white),
+    try {
+      LoginResponse res = await LoginAPI.getCreateData(
+        phone: phone,
+        captcha: int.parse(code),
       );
-      return;
-    }
 
-    LoginModel? resp = res.data;
-    if (resp!.accessToken.isNotEmpty) {
-      var box = Hive.box('Box');
-      box.put('access-token', resp.accessToken);
-      box.put('phone', resp.phone);
-      Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
+      if (res.code != 100001) {
+        FToast.toast(
+          context,
+          duration: 800,
+          msg: res.message,
+          msgStyle: const TextStyle(color: Colors.white),
+        );
+        return;
+      }
+
+      LoginModel? resp = res.data;
+      if (resp!.accessToken.isNotEmpty) {
+        var box = Hive.box('Box');
+        box.put('access-token', resp.accessToken);
+        box.put('phone', resp.phone);
+        Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
+        FToast.toast(
+          context,
+          duration: 800,
+          msg: '登录成功',
+          msgStyle: const TextStyle(color: Colors.white),
+        );
+      }
+    } catch (e) {
       FToast.toast(
         context,
-        duration: 800,
-        msg: '登录成功',
+        duration: 1800,
+        msg: "$e",
         msgStyle: const TextStyle(color: Colors.white),
       );
     }
@@ -85,7 +116,7 @@ class _BodyState extends State<Body> {
         child: Container(
           padding: EdgeInsets.zero,
           width: MediaQuery.of(context).size.width - 40,
-          height: MediaQuery.of(context).size.height - 400,
+          height: MediaQuery.of(context).size.height - 350,
           child: Column(
             children: [
               Image.asset("assets/images/logo.png", width: 120, height: 120),
@@ -101,16 +132,12 @@ class _BodyState extends State<Body> {
                   Expanded(
                     child: HCInput(
                       controller: _codeController,
-                      hintText: '请输入4位验证码',
+                      hintText: '请输入验证码',
                       icon: Icons.safety_check,
                     ),
                   ),
                   Padding(padding: EdgeInsets.only(left: 20)),
-                  Expanded(
-                    child: TimerCountDownButton(
-                      phone: _phoneController.value.text,
-                    ),
-                  ),
+                  Expanded(child: TimerCountDownButton(phone: phoneValue)),
                 ],
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),

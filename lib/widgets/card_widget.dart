@@ -29,77 +29,113 @@ class _HCCardState extends State<HCCard> {
     return InkWell(
       onTap: () => widget.onPressed?.call(),
       child: Container(
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.only(top: 5),
-        color: cardColor,
+        padding: const EdgeInsets.only(
+          left: 20,
+        ),
+        margin: EdgeInsets.only(left: 10, right: 10, top: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 3, //阴影范围
+              spreadRadius: 0.1, //阴影浓度
+              color: const Color.fromARGB(20, 0, 0, 0), //阴影颜色
+            ),
+          ],
+        ),
         child: Column(
           children: [
-            Row(
-              children: [
-                Text(
-                  '缴费年份：${widget.year}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+            Container(
+              padding: const EdgeInsets.only(top: 10, bottom: 10,right: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(width: 0, color: Colors.grey.shade300),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    '查看详情>',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    '缴费年份：${widget.year}',
+                    style: TextStyle(color: Colors.grey),
                   ),
-                ),
-              ],
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      '查看详情>',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Padding(padding: EdgeInsets.only(top: 10)),
-            Row(
-              children: [
-                Text.rich(
-                  TextSpan(
-                    text: "总计金额：",
-                    style: TextStyle(color: Colors.black, fontSize: 12),
-                    children: [
-                      TextSpan(
-                        text: "${widget.money} 元",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      ),
-                    ],
-                  ),
+            Container(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(width: 0, color: Colors.grey.shade300),
                 ),
-              ],
+              ),
+              child: Row(
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      text: "总计金额：",
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "￥${widget.money}",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Padding(padding: EdgeInsets.only(top: 10)),
-            Row(
-              children: [
-                Text.rich(
-                  TextSpan(
-                    text: "水使水量：",
-                    style: TextStyle(color: Colors.black, fontSize: 12),
-                    children: [
-                      TextSpan(
-                        text: "${widget.water} 吨",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      ),
-                    ],
-                  ),
+            Container(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(width: 0, color: Colors.grey.shade300),
                 ),
-              ],
+              ),
+              child: Row(
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      text: "水使水量：",
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "${widget.water} m³",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Padding(padding: EdgeInsets.only(top: 10)),
-            Row(
-              children: [
-                Text.rich(
-                  TextSpan(
-                    text: "总计电量：",
-                    style: TextStyle(color: Colors.black, fontSize: 12),
-                    children: [
-                      TextSpan(
-                        text: "${widget.kWh} 度",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      ),
-                    ],
+            Container(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Row(
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      text: "总计电量：",
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "${widget.kWh} kWh",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

@@ -43,6 +43,8 @@ dependencies:
   shimmer: ^3.0.0
   common_utils: ^2.1.0
   ftoast: ^2.0.0
+  flutter_local_notifications: ^18.0.1
+  permission_handler: ^11.4.0
 
 dev_dependencies:
   flutter_test:

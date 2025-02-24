@@ -21,6 +21,13 @@ class TimerCountDownButton extends StatefulWidget {
 class _TimerCountDownButtonState extends State<TimerCountDownButton> {
   late Timer _timer;
   int _countdownTime = 0;
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return HCButton(
@@ -37,6 +44,7 @@ class _TimerCountDownButtonState extends State<TimerCountDownButton> {
   // 获取验证码
   Future<void> _onGetCode(BuildContext context) async {
     String phone = widget.phone;
+
     if (!RegexUtil.isMobileExact(phone)) {
       FToast.toast(
         context,
@@ -46,31 +54,39 @@ class _TimerCountDownButtonState extends State<TimerCountDownButton> {
       );
       return;
     }
-    debugPrint(phone);
 
-    CaptchaResponse res = await GetCodeAPI.getCreateData(phone: phone);
-    debugPrint(res.message);
-    if (res.code != 100001) {
+    try {
+      CaptchaResponse res = await GetCodeAPI.getCreateData(phone: phone);
+      debugPrint(res.message);
+      if (res.code != 100001) {
+        FToast.toast(
+          context,
+          duration: 800,
+          msg: res.message ?? '短信验证码发送失败，请重试',
+          msgStyle: const TextStyle(color: Colors.white),
+        );
+        return;
+      }
+
+      setState(() {
+        _countdownTime = 60;
+      });
+      //开始倒计时
+      startCountdownTimer();
       FToast.toast(
         context,
         duration: 800,
-        msg: res.message ?? '短信验证码发送失败，请重试',
+        msg: '短信验证码已发送，请注意查收',
         msgStyle: const TextStyle(color: Colors.white),
       );
-      return;
+    } catch (e) {
+      FToast.toast(
+        context,
+        duration: 1800,
+        msg: "$e",
+        msgStyle: const TextStyle(color: Colors.white),
+      );
     }
-
-    setState(() {
-      _countdownTime = 60;
-    });
-    //开始倒计时
-    startCountdownTimer();
-    FToast.toast(
-      context,
-      duration: 800,
-      msg: '短信验证码已发送，请注意查收',
-      msgStyle: const TextStyle(color: Colors.white),
-    );
   }
 
   // 开始倒计时
@@ -84,11 +100,5 @@ class _TimerCountDownButtonState extends State<TimerCountDownButton> {
         }
       });
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _timer.cancel();
   }
 }

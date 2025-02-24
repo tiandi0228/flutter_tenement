@@ -1,5 +1,9 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tenement/models/order_model.dart';
+import 'package:flutter_tenement/network/api.dart';
 import 'package:flutter_tenement/widgets/card_widget.dart';
+import 'package:ftoast/ftoast.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Body extends StatefulWidget {
@@ -10,12 +14,48 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  List list = ['1','2','3'];
+  List<OrderModel> list = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getOrder();
+  }
+
+  // 获取缴费记录
+  Future<void> _getOrder() async {
+    try {
+      OrderResponse res = await GetOrderAPI.getCreateData();
+      debugPrint("数据：$res");
+      if (res.code != 100001) {
+        FToast.toast(
+          context,
+          duration: 800,
+          msg: res.message,
+          msgStyle: const TextStyle(color: Colors.white),
+        );
+        return;
+      }
+
+      setState(() {
+        list = res.data!;
+      });
+    } catch (e) {
+      debugPrint("错误：$e");
+      FToast.toast(
+        context,
+        duration: 1800,
+        msg: "$e",
+        msgStyle: const TextStyle(color: Colors.white),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
+      padding: EdgeInsets.only(bottom: 40),
       child:
           list.isEmpty
               ? Column(
@@ -26,15 +66,15 @@ class _BodyState extends State<Body> {
                     list
                         .map(
                           (item) => HCCard(
-                            year: "2024",
-                            money: "2000.00",
-                            water: "2000",
-                            kWh: "2000",
+                            year: item.year,
+                            money: MoneyUtil.changeFStr2YWithUnit(item.total.toString()),
+                            water: "${item.waterUsed}",
+                            kWh: "${item.electricityConsumption}",
                             onPressed:
                                 () => {
                                   Navigator.pushNamed(
                                     context,
-                                    "/payment-record-detail/1",
+                                    "/payment-record-detail/${item.year}",
                                   ),
                                 },
                           ),

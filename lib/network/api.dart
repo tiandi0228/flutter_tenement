@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tenement/models/captcha_model.dart';
 import 'package:flutter_tenement/models/login_model.dart';
+import 'package:flutter_tenement/models/order_detail_model.dart';
+import 'package:flutter_tenement/models/order_model.dart';
 import 'package:flutter_tenement/models/user_model.dart';
 import 'package:flutter_tenement/network/network_manager.dart';
 
@@ -30,16 +32,32 @@ class GetCodeAPI {
 
 // 获取租房信息
 class GetUserByRoomAPI {
-  static Future<dynamic> getCreateData({required String phone}) async {
-    var res = await NetworkManager().get('user/room', params: {"phone": phone});
+  static Future<dynamic> getCreateData() async {
+    var res = await NetworkManager().get('user/room');
     return UserResponse.fromJson(res);
   }
 }
 
 // 获取用户信息
 class GetUserAPI {
-  static Future<dynamic> getCreateData({required String phone}) async {
-    var res = await NetworkManager().get('user', params: {"phone": phone});
+  static Future<dynamic> getCreateData() async {
+    var res = await NetworkManager().get('user');
     return UserResponse.fromJson(res);
+  }
+}
+
+// 获取缴费记录
+class GetOrderAPI {
+  static Future<dynamic> getCreateData() async {
+    var res = await NetworkManager().get('order');
+    return OrderResponse.fromJson(res);
+  }
+}
+
+// 获取缴费详情
+class GetOrderYearAPI {
+  static Future<dynamic> getCreateData({required String year}) async {
+    var res = await NetworkManager().get('order/year', params: {"year": year});
+    return OrderDetailResponse.fromJson(res);
   }
 }

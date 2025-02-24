@@ -24,43 +24,40 @@ class _BodyState extends State<Body> {
 
   // 获取用户信息
   Future<void> _getUser() async {
-    var box = Hive.box('Box');
-    var phoneCache = box.get('phone');
+    try {
+      UserResponse res = await GetUserAPI.getCreateData();
+      if (res.code != 100001) {
+        FToast.toast(
+          context,
+          duration: 800,
+          msg: res.message,
+          msgStyle: const TextStyle(color: Colors.white),
+        );
+        return;
+      }
 
-    UserResponse res = await GetUserAPI.getCreateData(phone: phoneCache);
-    debugPrint(res.data?.inTime);
-    if (res.code != 100001) {
+      setState(() {
+        name = res.data!.name!;
+        phone = res.data!.phone!;
+      });
+    } catch (e) {
       FToast.toast(
         context,
-        duration: 800,
-        msg: res.message,
+        duration: 1800,
+        msg: "$e",
         msgStyle: const TextStyle(color: Colors.white),
       );
-      return;
     }
-
-    setState(() {
-      name = res.data!.name!;
-      phone = res.data!.phone!;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.zero,
+      margin: EdgeInsets.only(top: 5, bottom: 5),
       child: Column(
         children: [
-          Container(
-            margin: EdgeInsets.only(top: 5, bottom: 5),
-            color: Colors.white,
-            child: Column(
-              children: [
-                HCCell(label: "姓名", value: name),
-                HCCell(label: "手机号码", value: phone, isBorder: false),
-              ],
-            ),
-          ),
+          HCCell(label: "姓名", value: name),
+          HCCell(label: "手机号码", value: phone, isBorder: false),
         ],
       ),
     );

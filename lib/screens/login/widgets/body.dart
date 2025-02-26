@@ -4,7 +4,6 @@ import 'package:flutter_tenement/models/login_model.dart';
 import 'package:flutter_tenement/network/api.dart';
 import 'package:flutter_tenement/widgets/button_widget.dart';
 import 'package:flutter_tenement/widgets/input_widget.dart';
-import 'package:flutter_tenement/screens/login/widgets/timer_count_down_button_widget.dart';
 import 'package:ftoast/ftoast.dart';
 import 'package:hive/hive.dart';
 
@@ -17,35 +16,19 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _codeController = TextEditingController();
-
-  late String phoneValue = '';
-
-  @override
-  void initState() {
-    super.initState();
-    // 监听手机号码输入，解决在手机上另一层组件获取不到数据
-    _phoneController.addListener(_handlePhoneFocusChange);
-  }
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
     _phoneController.dispose();
-    _codeController.dispose();
+    _passwordController.dispose();
     super.dispose();
-  }
-
-  void _handlePhoneFocusChange() {
-    debugPrint("手机号码：${_phoneController.text}");
-    setState(() {
-      phoneValue = _phoneController.text;
-    });
   }
 
   // 登录
   Future<void> _onLogin(BuildContext context) async {
     String phone = _phoneController.value.text;
-    String code = _codeController.value.text;
+    String password = _passwordController.value.text;
 
     if (!RegexUtil.isMobileExact(phone)) {
       FToast.toast(
@@ -57,11 +40,11 @@ class _BodyState extends State<Body> {
       return;
     }
 
-    if (code.length < 4) {
+    if (password.length < 8) {
       FToast.toast(
         context,
         duration: 800,
-        msg: '请输入验证码',
+        msg: '请输入密码',
         msgStyle: const TextStyle(color: Colors.white),
       );
       return;
@@ -69,7 +52,7 @@ class _BodyState extends State<Body> {
     try {
       LoginResponse res = await LoginAPI.getCreateData(
         phone: phone,
-        captcha: int.parse(code),
+        password: password,
       );
 
       if (res.code != 100001) {
@@ -127,18 +110,11 @@ class _BodyState extends State<Body> {
                 icon: Icons.phone_iphone,
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),
-              Row(
-                children: [
-                  Expanded(
-                    child: HCInput(
-                      controller: _codeController,
-                      hintText: '请输入验证码',
-                      icon: Icons.safety_check,
-                    ),
-                  ),
-                  Padding(padding: EdgeInsets.only(left: 20)),
-                  Expanded(child: TimerCountDownButton(phone: phoneValue)),
-                ],
+              HCInput(
+                controller: _passwordController,
+                hintText: '请输入密码',
+                obscureText: false,
+                icon: Icons.lock,
               ),
               const Padding(padding: EdgeInsets.only(top: 20)),
               HCButton(text: "登录", onPressed: () => _onLogin(context)),

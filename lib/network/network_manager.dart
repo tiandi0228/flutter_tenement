@@ -126,6 +126,35 @@ class NetworkManager {
       throw createErrorEntity(e);
     }
   }
+
+  ///  put 操作
+  Future put(String path, {dynamic params, Options? options}) async {
+    try {
+      Options requestOptions = options ?? Options();
+
+      var token = box.get('access-token');
+
+      /// 以下三行代码为获取token然后将其合并到header的操作
+      Map<String, dynamic> authorization = {"Access-token": token};
+      requestOptions = requestOptions.copyWith(headers: authorization);
+      var response = await dio.put(path, data: params, options: requestOptions);
+
+      return response.data;
+    } on DioException catch (e) {
+      // 当错误代码为 401 主动跳转登录界面
+      if (e.response?.statusCode == 401) {
+        Future.delayed(const Duration(seconds: 1), () {
+          box.clear();
+          Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.context,
+            '/login',
+            (route) => false,
+          );
+        });
+      }
+      throw createErrorEntity(e);
+    }
+  }
 }
 
 // 错误信息

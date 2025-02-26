@@ -63,5 +63,12 @@ class MyRouter {
       handler: loginScreenHandler,
       transitionType: TransitionType.inFromRight,
     );
+
+    // 密码管理
+    router.define(
+      '/password',
+      handler: passwordScreenHandler,
+      transitionType: TransitionType.inFromRight,
+    );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tenement/config/constants.dart';
 
 class HCCard extends StatefulWidget {
   final Function? onPressed;
@@ -29,9 +28,7 @@ class _HCCardState extends State<HCCard> {
     return InkWell(
       onTap: () => widget.onPressed?.call(),
       child: Container(
-        padding: const EdgeInsets.only(
-          left: 20,
-        ),
+        padding: const EdgeInsets.only(left: 20),
         margin: EdgeInsets.only(left: 10, right: 10, top: 15),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -47,7 +44,7 @@ class _HCCardState extends State<HCCard> {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(top: 10, bottom: 10,right: 10),
+              padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(width: 0, color: Colors.grey.shade300),

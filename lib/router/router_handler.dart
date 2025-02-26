@@ -4,6 +4,7 @@ import 'package:flutter_tenement/screens/home/home_screen.dart';
 import 'package:flutter_tenement/screens/house/house_screen.dart';
 import 'package:flutter_tenement/screens/login/login_screen.dart';
 import 'package:flutter_tenement/screens/message/message_screen.dart';
+import 'package:flutter_tenement/screens/password/password_screen.dart';
 import 'package:flutter_tenement/screens/record_detail/record_detail_screen.dart';
 import 'package:flutter_tenement/screens/records/records_screen.dart';
 import 'package:flutter_tenement/screens/user/user_screen.dart';
@@ -55,5 +56,12 @@ var recordDetailScreenHandler = Handler(
 var loginScreenHandler = Handler(
   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
     return const LoginScreen();
+  },
+);
+
+// 密码管理
+var passwordScreenHandler = Handler(
+  handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
+    return const PasswordScreen();
   },
 );

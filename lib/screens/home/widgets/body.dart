@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tenement/models/menu_model.dart';
 import 'package:flutter_tenement/models/upgrade_model.dart';
 import 'package:flutter_tenement/network/api.dart';
+import 'package:flutter_tenement/utils/notification_util.dart';
 import 'package:flutter_tenement/widgets/small_window_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -32,9 +34,9 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
       iconColor: Colors.deepOrange,
     ),
     Menu(
-      title: '常用电话',
-      path: '/login',
-      icon: Icons.phone_in_talk_outlined,
+      title: '密码管理',
+      path: '/password',
+      icon: Icons.lock_outline,
       iconColor: Colors.green,
     ),
   ];
@@ -43,6 +45,7 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
+      // _notification();
       if (mounted) {
         _upgrade();
       }
@@ -56,12 +59,26 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
   }
 
+  // 通知
+  Future<void> _notification() async {
+    var status = await Permission.notification.status;
+    if (status.isGranted) {
+      debugPrint("isGranted true");
+      NotificationService().showNotification(
+        title: '水电费缴费通知',
+        body: '你好，今天是水电费缴费时间，请拍照片发房东',
+      );
+      return;
+    } else {
+      debugPrint("isGranted false");
+    }
+  }
+
   // 版本升级
   Future<void> _upgrade() async {
     try {
       UpgradeResponse res = await UpgradeAPI.getCreateData(version: '1.0.1');
-      debugPrint("数据： ${res.data}");
-      if (res.code == 100001 && res.data?.content != "") {
+      if (res.code == 100001 && res.data != null && res.data?.content != "") {
         SmallWindow().show(context, res.data as UpgradeModel);
       }
     } catch (e) {
@@ -75,6 +92,10 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
 
     if (AppLifecycleState.resumed == state) {
       debugPrint("进入app");
+    } else if (AppLifecycleState.hidden == state) {
+      debugPrint("隐藏app");
+    } else if (AppLifecycleState.detached == state) {
+      debugPrint("隐藏app");
     }
   }
 
@@ -107,17 +128,6 @@ class _BodyState extends State<Body> with WidgetsBindingObserver {
                   (item) => InkWell(
                     onTap: () async {
                       if (item.path == '/login') {
-                        //   var status = await Permission.notification.status;
-                        //   if (status.isGranted) {
-                        //     debugPrint("isGranted true");
-                        //     NotificationService().ShowNotifiaction(
-                        //       title: '水电费缴费通知',
-                        //       body: '你好，今天是水电费缴费时间，请拍照片发房东',
-                        //     );
-                        //     return;
-                        //   } else {
-                        //     debugPrint("isGranted false");
-                        //   }
                         return;
                       }
                       Navigator.pushNamed(context, item.path);

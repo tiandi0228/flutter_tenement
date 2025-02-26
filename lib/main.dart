@@ -14,7 +14,7 @@ Future<void> _ensureInitialized() async {
 
 void main() async {
   await _ensureInitialized();
-  NotificationService().initilized;
+  NotificationService().initialized;
   MyRouter.configureRoutes(MyRouter.router);
   runApp(const MyApp());
 }

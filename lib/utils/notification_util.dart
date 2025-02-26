@@ -3,9 +3,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
   final notificationPlugin = FlutterLocalNotificationsPlugin();
-  bool isinitialized = false;
+  bool isInitialized = false;
 
-  bool get initilized => isinitialized;
+  bool get initialized => isInitialized;
 
   Future<void> requestPermissions() async {
     final androidPlugin =
@@ -26,7 +26,7 @@ class NotificationService {
   }
 
   Future<void> initNotification() async {
-    if (isinitialized) return;
+    if (isInitialized) return;
 
     await requestPermissions();
     const initSettingsAndroid = AndroidInitializationSettings(
@@ -36,7 +36,7 @@ class NotificationService {
     const initSettings = InitializationSettings(android: initSettingsAndroid);
 
     await notificationPlugin.initialize(initSettings);
-    isinitialized = true;
+    isInitialized = true;
   }
 
   NotificationDetails notificationDetails() {
@@ -51,12 +51,12 @@ class NotificationService {
     );
   }
 
-  Future<void> ShowNotifiaction({
+  Future<void> showNotification({
     int id = 0,
     String? title,
     String? body,
   }) async {
-    if (!isinitialized) {
+    if (!isInitialized) {
       await initNotification(); // Ensure it's initialized
     }
     return notificationPlugin.show(id, title, body, notificationDetails());

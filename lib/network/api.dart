@@ -2,6 +2,7 @@ import 'package:flutter_tenement/models/captcha_model.dart';
 import 'package:flutter_tenement/models/login_model.dart';
 import 'package:flutter_tenement/models/order_detail_model.dart';
 import 'package:flutter_tenement/models/order_model.dart';
+import 'package:flutter_tenement/models/password_model.dart';
 import 'package:flutter_tenement/models/upgrade_model.dart';
 import 'package:flutter_tenement/models/user_model.dart';
 import 'package:flutter_tenement/network/network_manager.dart';
@@ -10,11 +11,11 @@ import 'package:flutter_tenement/network/network_manager.dart';
 class LoginAPI {
   static Future<dynamic> getCreateData({
     required String phone,
-    required int captcha,
+    required String password,
   }) async {
     var res = await NetworkManager().post(
       'login',
-      params: {"phone": phone, "captcha": captcha},
+      params: {"phone": phone, "password": password},
     );
 
     return LoginResponse.fromJson(res);
@@ -70,5 +71,19 @@ class UpgradeAPI {
       params: {"version": version},
     );
     return UpgradeResponse.fromJson(res);
+  }
+}
+
+// 修改密码
+class ChangePasswordAPI {
+  static Future<dynamic> getCreateData({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    var res = await NetworkManager().put(
+      'user/password',
+      params: {"old_password": oldPassword, "new_password": newPassword},
+    );
+    return PasswordResponse.fromJson(res);
   }
 }

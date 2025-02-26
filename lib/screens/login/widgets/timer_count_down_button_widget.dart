@@ -59,6 +59,7 @@ class _TimerCountDownButtonState extends State<TimerCountDownButton> {
       CaptchaResponse res = await GetCodeAPI.getCreateData(phone: phone);
       debugPrint(res.message);
       if (res.code != 100001) {
+        if (!context.mounted) return;
         FToast.toast(
           context,
           duration: 800,
@@ -73,6 +74,7 @@ class _TimerCountDownButtonState extends State<TimerCountDownButton> {
       });
       //开始倒计时
       startCountdownTimer();
+      if (!context.mounted) return;
       FToast.toast(
         context,
         duration: 800,

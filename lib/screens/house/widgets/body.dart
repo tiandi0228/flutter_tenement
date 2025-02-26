@@ -1,10 +1,10 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tenement/models/user_model.dart';
 import 'package:flutter_tenement/network/api.dart';
 import 'package:flutter_tenement/widgets/cell_widget.dart';
+import 'package:flutter_tenement/widgets/shimmer_widget.dart';
 import 'package:ftoast/ftoast.dart';
-import 'package:common_utils/common_utils.dart';
-import 'package:hive/hive.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -20,6 +20,7 @@ class _BodyState extends State<Body> {
   String rentDeposit = '';
   String utilityDeposits = '';
   String nextRentPayTime = '';
+  bool loading = false;
 
   @override
   void initState() {
@@ -30,8 +31,13 @@ class _BodyState extends State<Body> {
   // 获取租房信息
   Future<void> _getUserRoom() async {
     try {
+      setState(() {
+        loading = true;
+      });
       UserResponse res = await GetUserByRoomAPI.getCreateData();
-      debugPrint(res.data?.inTime);
+      setState(() {
+        loading = false;
+      });
       if (res.code != 100001) {
         FToast.toast(
           context,
@@ -62,6 +68,9 @@ class _BodyState extends State<Body> {
         nextRentPayTime = res.data!.nextRentPayTime!;
       });
     } catch (e) {
+      setState(() {
+        loading = false;
+      });
       FToast.toast(
         context,
         duration: 1800,
@@ -76,16 +85,23 @@ class _BodyState extends State<Body> {
     return Container(
       padding: EdgeInsets.zero,
       margin: EdgeInsets.only(top: 5, bottom: 5),
-      child: Column(
-        children: [
-          HCCell(label: "房间号", value: roomNumber),
-          HCCell(label: "入住时间", value: inTime),
-          HCCell(label: "房租押金", value: "￥$rentDeposit"),
-          HCCell(label: "水电押金", value: "￥$utilityDeposits"),
-          HCCell(label: "付费方式", value: paidFormat),
-          HCCell(label: "下次房租缴费时间", value: nextRentPayTime, isBorder: false),
-        ],
-      ),
+      child:
+          !loading
+              ? Column(
+                children: [
+                  HCCell(label: "房间号", value: roomNumber),
+                  HCCell(label: "入住时间", value: inTime),
+                  HCCell(label: "房租押金", value: "￥$rentDeposit"),
+                  HCCell(label: "水电押金", value: "￥$utilityDeposits"),
+                  HCCell(label: "付费方式", value: paidFormat),
+                  HCCell(
+                    label: "下次房租缴费时间",
+                    value: nextRentPayTime,
+                    isBorder: false,
+                  ),
+                ],
+              )
+              : HCShimmer(),
     );
   }
 }

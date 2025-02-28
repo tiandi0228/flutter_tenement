@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_tenement/config/constants.dart';
 import 'package:hive/hive.dart';
 
 class NetworkManager {
@@ -6,11 +8,14 @@ class NetworkManager {
 
   factory NetworkManager() => _instance;
   late Dio dio;
+
   var box = Hive.box('Box');
 
   NetworkManager._internal() {
     // BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
     BaseOptions options = BaseOptions(
+      // 请求基地址,可以包含子路径
+      baseUrl: baseUrl,
       //连接服务器超时时间，单位是毫秒.
       connectTimeout: const Duration(milliseconds: 5000),
 
@@ -39,38 +44,223 @@ class NetworkManager {
     dio = Dio(options);
 
     // 添加拦截器
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        // 在请求被发送之前做一些事情
-        return handler.next(options); //continue
-      },
-      onResponse: (Response response, handler) {
-        // 在返回响应数据之前做一些预处理
-        return handler.next(response); // continue
-      },
-      onError: (DioException e, handler) {
-        // 当请求失败时做一些预处理
-        return handler.next(e);
-      },
-    ));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // 在请求被发送之前做一些事情
+          return handler.next(options); //continue
+        },
+        onResponse: (Response response, handler) {
+          // 在返回响应数据之前做一些预处理
+          return handler.next(response); // continue
+        },
+        onError: (DioException e, handler) {
+          // 当请求失败时做一些预处理
+          return handler.next(e);
+        },
+      ),
+    );
   }
 
-  Future get({
-    required String url,
-    bool? isCityLocation = false,
-    Map<String, dynamic>? params,
-  }) async {
+  /// get 操作
+  Future get(String path, {dynamic params, Options? options}) async {
     try {
-      String key = await box.get('key') != null ? box.get('key') : '';
-      if (key.isEmpty) return;
-      params?.addAll({'key': key});
-      Response response = await dio.get(
-        url,
+      Options requestOptions = options ?? Options();
+      var token = box.get('access-token');
+
+      /// 以下三行代码为获取token然后将其合并到header的操作
+      Map<String, dynamic> authorization = {"Access-token": token};
+      requestOptions = requestOptions.copyWith(headers: authorization);
+      var response = await dio.get(
+        path,
         queryParameters: params,
+        options: requestOptions,
       );
+
       return response.data;
-    } catch (error) {
-      throw Exception('Error making GET request: $error');
+    } on DioException catch (e) {
+      // 当错误代码为 401 主动跳转登录界面
+      if (e.response?.statusCode == 401) {
+        Future.delayed(const Duration(seconds: 1), () {
+          box.clear();
+          Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.context,
+            '/login',
+            (route) => false,
+          );
+        });
+      }
+      throw createErrorEntity(e);
     }
+  }
+
+  ///  post 操作
+  Future post(String path, {dynamic params, Options? options}) async {
+    try {
+      Options requestOptions = options ?? Options();
+
+      var token = box.get('access-token');
+
+      /// 以下三行代码为获取token然后将其合并到header的操作
+      Map<String, dynamic> authorization = {"Access-token": token};
+      requestOptions = requestOptions.copyWith(headers: authorization);
+      var response = await dio.post(
+        path,
+        data: params,
+        options: requestOptions,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      // 当错误代码为 401 主动跳转登录界面
+      if (e.response?.statusCode == 401) {
+        Future.delayed(const Duration(seconds: 1), () {
+          box.clear();
+          Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.context,
+            '/login',
+            (route) => false,
+          );
+        });
+      }
+      throw createErrorEntity(e);
+    }
+  }
+
+  ///  put 操作
+  Future put(String path, {dynamic params, Options? options}) async {
+    try {
+      Options requestOptions = options ?? Options();
+
+      var token = box.get('access-token');
+
+      /// 以下三行代码为获取token然后将其合并到header的操作
+      Map<String, dynamic> authorization = {"Access-token": token};
+      requestOptions = requestOptions.copyWith(headers: authorization);
+      var response = await dio.put(path, data: params, options: requestOptions);
+
+      return response.data;
+    } on DioException catch (e) {
+      // 当错误代码为 401 主动跳转登录界面
+      if (e.response?.statusCode == 401) {
+        Future.delayed(const Duration(seconds: 1), () {
+          box.clear();
+          Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentState!.context,
+            '/login',
+            (route) => false,
+          );
+        });
+      }
+      throw createErrorEntity(e);
+    }
+  }
+}
+
+// 错误信息
+ErrorEntity createErrorEntity(DioException error) {
+  switch (error.type) {
+    case DioExceptionType.cancel:
+      {
+        return ErrorEntity(code: -1, message: "请求取消");
+      }
+    case DioExceptionType.connectionTimeout:
+      {
+        return ErrorEntity(code: -1, message: "连接超时");
+      }
+
+    case DioExceptionType.sendTimeout:
+      {
+        return ErrorEntity(code: -1, message: "请求超时");
+      }
+
+    case DioExceptionType.receiveTimeout:
+      {
+        return ErrorEntity(code: -1, message: "响应超时");
+      }
+    case DioExceptionType.badResponse:
+      {
+        try {
+          int? errCode = error.response?.statusCode;
+          if (errCode == null) {
+            return ErrorEntity(code: -2, message: error.message);
+          }
+          switch (errCode) {
+            case 400:
+              {
+                return ErrorEntity(code: errCode, message: "请求语法错误");
+              }
+            case 401:
+              {
+                return ErrorEntity(code: errCode, message: "没有权限");
+              }
+
+            case 403:
+              {
+                return ErrorEntity(code: errCode, message: "服务器拒绝执行");
+              }
+
+            case 404:
+              {
+                return ErrorEntity(code: errCode, message: "无法连接服务器");
+              }
+
+            case 405:
+              {
+                return ErrorEntity(code: errCode, message: "请求方法被禁止");
+              }
+
+            case 500:
+              {
+                return ErrorEntity(code: errCode, message: "服务器内部错误");
+              }
+
+            case 502:
+              {
+                return ErrorEntity(code: errCode, message: "无效的请求");
+              }
+
+            case 503:
+              {
+                return ErrorEntity(code: errCode, message: "服务器挂了");
+              }
+
+            case 505:
+              {
+                return ErrorEntity(code: errCode, message: "不支持HTTP协议请求");
+              }
+
+            default:
+              {
+                // return ErrorEntity(code: errCode, message: "未知错误");
+                return ErrorEntity(
+                  code: errCode,
+                  message: error.response?.statusMessage ?? '',
+                );
+              }
+          }
+        } on Exception catch (_) {
+          return ErrorEntity(code: -1, message: "未知错误");
+        }
+      }
+
+    default:
+      {
+        return ErrorEntity(code: -1, message: error.message);
+      }
+  }
+}
+
+// 异常处理
+class ErrorEntity implements Exception {
+  int code;
+  String? message;
+
+  ErrorEntity({required this.code, this.message});
+
+  @override
+  String toString() {
+    if (message == null) return "Exception";
+    return "Exception: code $code, $message";
   }
 }

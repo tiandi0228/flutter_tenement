@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tenement/config/constants.dart';
 import 'package:flutter_tenement/router/router.dart';
 import 'package:flutter_tenement/screens/splash/splash_screen.dart';
+import 'package:flutter_tenement/utils/notification_util.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> _ensureInitialized() async {
@@ -13,6 +14,7 @@ Future<void> _ensureInitialized() async {
 
 void main() async {
   await _ensureInitialized();
+  NotificationService().initialized;
   MyRouter.configureRoutes(MyRouter.router);
   runApp(const MyApp());
 }
@@ -25,9 +27,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: '租房管理',
-      theme: ThemeData(
-        scaffoldBackgroundColor: backgroundColor,
-      ),
+      theme: ThemeData(scaffoldBackgroundColor: backgroundColor),
+      navigatorKey: navigatorKey,
       onGenerateRoute: MyRouter.router.generator,
       home: SplashScreen(),
     );
